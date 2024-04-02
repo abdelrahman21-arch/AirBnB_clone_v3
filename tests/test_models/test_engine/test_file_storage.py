@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+
+# !/usr/bin/python3
 """
 Contains the TestFileStorageDocs classes
 """
@@ -114,34 +115,28 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-    @unittest.skipIf(os.environ.get('HBNB_TYPE_STORAGE') == 'db', 'skip if environ is  db')
-    class TestStorageGet(unittest.TestCase):
-        """
-        Testing get method of DBstorage
-        """
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get(self):
+        """ Tests to check method for obtaining an instance file storage"""
+        storage = FileStorage()
+        dic = {"name": "Vecindad"}
+        instance = State(**dic)
+        storage.new(instance)
+        storage.save()
+        storage = FileStorage()
+        get_instance = storage.get(State, instance.id)
+        self.assertEqual(get_instance, instance)
 
-        @classmethod
-        def setUpClass(cls):
-            """
-            setup tests for class
-            """
-            print('\n\n.................................')
-            print('...... Testing Get() Method ......')
-            print('.......... Place  Class ..........')
-            print('.................................\n\n')
-
-        def setUp(self):
-            """
-            setup method
-            """
-            self.state = State(name="mexico")
-            self.state.save()
-
-        def test_get_method_obj(self):
-            """
-            testing get() method
-            :return: True if pass, False if not pass
-            """
-            result = FileStorage.get(cls="State", id=self.state.id)
-
-            self.assertIsInstance(result, State)
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count(self):
+        """ Tests to check the count method file storage """
+        storage = FileStorage()
+        dic = {"name": "Vecindad"}
+        state = State(**dic)
+        storage.new(state)
+        dic = {"name": "Mexico"}
+        city = City(**dic)
+        storage.new(city)
+        storage.save()
+        c = storage.count()
+        self.assertEqual(len(storage.all()), c)
